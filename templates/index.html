@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>WiFi Car Remote</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            user-select: none; /* Text selection বন্ধ করার জন্য */
+        }
+        h1 { color: #00e676; }
+        .d-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 80px);
+            grid-template-rows: repeat(3, 80px);
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .btn {
+            background-color: #333;
+            border: 2px solid #555;
+            border-radius: 15px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transition: 0.1s;
+        }
+        .btn:active {
+            background-color: #00e676;
+            transform: scale(0.95);
+            box-shadow: 0 2px 10px rgba(0,230,118,0.5);
+        }
+        .up { grid-column: 2; grid-row: 1; }
+        .left { grid-column: 1; grid-row: 2; }
+        .right { grid-column: 3; grid-row: 2; }
+        .down { grid-column: 2; grid-row: 3; }
+        .stop { grid-column: 2; grid-row: 2; background-color: #d32f2f; }
+        .status { margin-top: 30px; font-size: 18px; color: #aaa; }
+    </style>
+</head>
+<body>
+
+    <h1>Cloud Car Remote</h1>
+    <div class="status" id="statusBox">Status: Waiting...</div>
+
+    <div class="d-pad">
+        <div class="btn up" onmousedown="sendCmd('F')" onmouseup="sendCmd('S')" ontouchstart="sendCmd('F')" ontouchend="sendCmd('S')">▲</div>
+        <div class="btn left" onmousedown="sendCmd('L')" onmouseup="sendCmd('S')" ontouchstart="sendCmd('L')" ontouchend="sendCmd('S')">◀</div>
+        <div class="btn stop" onclick="sendCmd('S')">■</div>
+        <div class="btn right" onmousedown="sendCmd('R')" onmouseup="sendCmd('S')" ontouchstart="sendCmd('R')" ontouchend="sendCmd('S')">▶</div>
+        <div class="btn down" onmousedown="sendCmd('B')" onmouseup="sendCmd('S')" ontouchstart="sendCmd('B')" ontouchend="sendCmd('S')">▼</div>
+    </div>
+
+    <script>
+        // আপনার Render অ্যাপের লিংক (আপলোড করার পর ব্রাউজারের লিংকটি এখানে বসান, তবে শেষের /update খেয়াল রাখবেন)
+        // যেহেতু ফ্লাস্ক একই সার্ভারে আছে, আমরা রিলেটিভ পাথ ব্যবহার করতে পারি
+        const apiUrl = '/update'; 
+
+        function sendCmd(cmd) {
+            document.getElementById('statusBox').innerText = "Command: " + cmd;
+            
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ command: cmd })
+            }).catch(err => {
+                document.getElementById('statusBox').innerText = "Network Error!";
+            });
+        }
+    </script>
+</body>
+</html>
