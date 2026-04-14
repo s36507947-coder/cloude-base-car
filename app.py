@@ -1,5 +1,5 @@
-import eventlet
-eventlet.monkey_patch()
+from gevent import monkey
+monkey.patch_all()
 
 from flask import Flask, request, jsonify, render_template_string
 from flask_cors import CORS
@@ -112,11 +112,11 @@ HTML_PAGE = """<!DOCTYPE html>
   <div id="status-bar">Command: <span id="cmd-label">S</span></div>
 
   <div class="grid">
-    <button class="btn btn-forward"  id="btn-F" data-cmd="F">&#9650;</button>
-    <button class="btn btn-left"     id="btn-L" data-cmd="L">&#9664;</button>
+    <button class="btn btn-forward"   id="btn-F" data-cmd="F">&#9650;</button>
+    <button class="btn btn-left"      id="btn-L" data-cmd="L">&#9664;</button>
     <button class="btn btn-stop stop" id="btn-S" data-cmd="S">&#9632;</button>
-    <button class="btn btn-right"    id="btn-R" data-cmd="R">&#9654;</button>
-    <button class="btn btn-backward" id="btn-B" data-cmd="B">&#9660;</button>
+    <button class="btn btn-right"     id="btn-R" data-cmd="R">&#9654;</button>
+    <button class="btn btn-backward"  id="btn-B" data-cmd="B">&#9660;</button>
   </div>
 
   <div class="label-row">
@@ -124,12 +124,10 @@ HTML_PAGE = """<!DOCTYPE html>
   </div>
 
   <script>
-    const SERVER = '';   // empty = same origin (Flask serves this page)
-
     async function sendCmd(cmd) {
       document.getElementById('cmd-label').textContent = cmd;
       try {
-        await fetch(SERVER + '/update', {
+        await fetch('/update', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ command: cmd })
@@ -149,16 +147,15 @@ HTML_PAGE = """<!DOCTYPE html>
       const release = (e) => {
         e.preventDefault();
         btn.classList.remove('active');
-        // Only send Stop if this wasn't already the Stop button
         if (cmd !== 'S') sendCmd('S');
       };
 
-      btn.addEventListener('mousedown',  press);
-      btn.addEventListener('mouseup',    release);
-      btn.addEventListener('mouseleave', release);
-      btn.addEventListener('touchstart', press,   { passive: false });
-      btn.addEventListener('touchend',   release, { passive: false });
-      btn.addEventListener('touchcancel',release, { passive: false });
+      btn.addEventListener('mousedown',   press);
+      btn.addEventListener('mouseup',     release);
+      btn.addEventListener('mouseleave',  release);
+      btn.addEventListener('touchstart',  press,   { passive: false });
+      btn.addEventListener('touchend',    release, { passive: false });
+      btn.addEventListener('touchcancel', release, { passive: false });
     });
   </script>
 </body>
